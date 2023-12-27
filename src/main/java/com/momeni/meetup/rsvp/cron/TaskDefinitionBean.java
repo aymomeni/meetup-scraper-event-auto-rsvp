@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 
@@ -65,8 +66,10 @@ public class TaskDefinitionBean implements Runnable {
             throw new RuntimeException(e);
         }
 
+        eventList.add(new Event("brunch", "https://www.meetup.com/the-sunday-squad/events/298062683/", new Date())); // todo remove
+
         for (Event event : eventList) {
-            System.out.println("Event: " + event.getEventTitle() + " url: " + event.getEventUrl() + " rsvp opens date: " + event.getRsvpOpensDate());
+            log.info("Event: " + event.getEventTitle() + " url: " + event.getEventUrl() + " rsvp opens date: " + event.getRsvpOpensDate());
 
             final WebDriver driver = hooks.getDriver();
             driver.get(event.getEventUrl());
