@@ -33,51 +33,25 @@ public class OncePerDayScheduledTask {
     @Autowired
     private TaskSchedulingService taskSchedulingService;
 
+    @Autowired
+    private MeetupScraperService meetupApiService;
+
     private static final Logger log = LoggerFactory.getLogger(OncePerDayScheduledTask.class);
     private static Timer timer = new Timer();
 
     // 0 0 7 * * *
     // cron = "0 44 15 * * *"
-    @Scheduled(cron = "0 */3 * * * *")
-    public void fetchAllEventsWithRsvpOpenForTheDay() throws IOException, InterruptedException {
-        // check if there is events to rsvp to today
-
+    @Scheduled(cron = "0 */5 * * * *")
+    public void dailyEventTaskScheduler() throws IOException {
         log.info("Main Scheduler started.. ");
+        List<String> eventUrls = meetupApiService.getAllEventUrls();
+        List<Event> eventList = meetupApiService.getAllEventsRsvpOpenToday(eventUrls);
 
-//        System.out.println("got here");
-//        List<String> eventUrls = null;
-//
-//        try {
-//            eventUrls = meetupApiService.getAllEventUrls();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        List<Event> eventList = null;
-//        try {
-//            eventList = meetupApiService.getAllEventsRsvpOpenToday(eventUrls);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        if(eventList.size() > 0) {
-//            // TODO: remove later
-//            Event event = new Event("Brunch at Sunday's Best. (Brunch Hard)", "https://www.meetup.com/the-sunday-squad/events/298062683/", new Date());
-//            eventList.add(event);
-//
-//            TimerTask CheckEventsTask = new OncePerDayScheduledTask();
-//            timer.schedule(CheckEventsTask, event.getRsvpOpensDate());
-//            timer.schedule(CheckEventsTask, DateUtils.addMinutes(new Date(), 2));
-//            log.info("task has been scheduled for event: {}", event.getEventTitle());
-//
-////            for(Event e : eventList) {
-////                TimerTask CheckEventsTask = new OncePerDayScheduledTask();
-////                timer.schedule(CheckEventsTask, event.getRsvpOpensDate());
-////                timer.schedule(CheckEventsTask, DateUtils.addMinutes(new Date(), 2));
-////                log.info("task has been scheduled for event: {}", event.getEventTitle());
-////            }
-
-
-        taskSchedulingService.scheduleATask("some id", taskDefinitionBean, "*/30 * * * * *"); // taskDefinition.getCronExpression());
+        if (eventList.size() > 0) {
+            for (Event event : eventList) {
+                log.info("Scheduling event: {} at: {}", event.getEventTitle(), event.getRsvpOpensDate());
+                taskSchedulingService.scheduleATask(UUID.randomUUID().toString(), taskDefinitionBean, event.getRsvpOpensDate());
+            }
+        }
     }
 }

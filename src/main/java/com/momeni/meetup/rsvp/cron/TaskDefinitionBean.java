@@ -13,8 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.io.IOException;
 import java.util.List;
 import java.util.Timer;
 
@@ -49,30 +48,22 @@ public class TaskDefinitionBean implements Runnable {
 
     @Override
     public void run() {
-//        System.out.println("Running action: " + taskDefinition.getActionType());
-//        System.out.println("With Data: " + taskDefinition.getData());
+        log.info("Running task within TaskDefinitionBean");
 
-        // rsvp to an event
-        // TODO: should check if there is any games to rsvp to today
-        // TODO: if yes create a timerTask to run at that time
+        List<String> eventUrls = null;
+        try {
+            eventUrls = meetupApiService.getAllEventUrls();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        System.out.println("got here run()");
-//        List<String> eventUrls = null;
-//        try {
-//            eventUrls = meetupApiService.getAllEventUrls();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-        List<Event> eventList = new ArrayList<>();
-//        try {
-//            eventList = meetupApiService.getAllEventsRsvpOpenToday(eventUrls);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        List<Event> eventList = null;
+        try {
+            eventList = meetupApiService.getAllEventsRsvpOpenToday(eventUrls);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        Event e = new Event("Brunch at Sunday's Best. (Brunch Hard)", "https://www.meetup.com/the-sunday-squad/events/298062683/", new Date());
-        eventList.add(e);
         for (Event event : eventList) {
             System.out.println("Event: " + event.getEventTitle() + " url: " + event.getEventUrl() + " rsvp opens date: " + event.getRsvpOpensDate());
 
@@ -80,8 +71,7 @@ public class TaskDefinitionBean implements Runnable {
             driver.get(event.getEventUrl());
             WebElement loginButton = driver.findElement(By.id("login-link"));
             loginButton.click();
-//        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-//        wait.wait();
+
             visibilityHelper.waitForPresenceOf(By.id("email"));
             WebElement emailInput = driver.findElement(By.id("email"));
             emailInput.sendKeys(username);
@@ -89,27 +79,21 @@ public class TaskDefinitionBean implements Runnable {
             passwordInput.sendKeys(password);
             WebElement submitButton = driver.findElement(By.name("submitButton"));
             submitButton.click();
-//        wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-//        wait.wait();
+
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException exception) {
                 throw new RuntimeException(exception);
             }
+
             visibilityHelper.waitForPresenceOf(By.xpath("//button[@data-testid=\"attend-irl-btn\"]"));
 
-            System.out.println("element is present");
+            log.info("Rsvp to event button present");
 
             WebElement attendButton = driver.findElement(By.xpath("//button[@data-testid=\"attend-irl-btn\"]"));
             visibilityHelper.waitForVisibilityOf(attendButton);
-//        attendButton.click(); TODO: uncomment later
+            attendButton.click();
             hooks.closeDriver();
-
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException exception) {
-                throw new RuntimeException(exception);
-            }
         }
     }
 
