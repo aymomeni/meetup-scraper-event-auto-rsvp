@@ -66,7 +66,7 @@ public class TaskDefinitionBean implements Runnable {
             throw new RuntimeException(e);
         }
 
-        eventList.add(new Event("brunch", "https://www.meetup.com/the-sunday-squad/events/298062683/", new Date())); // todo remove
+//        eventList.add(new Event("brunch", "https://www.meetup.com/the-sunday-squad/events/298062683/", new Date())); // todo remove
 
         for (Event event : eventList) {
             log.info("Event: " + event.getEventTitle() + " url: " + event.getEventUrl() + " rsvp opens date: " + event.getRsvpOpensDate());

@@ -47,7 +47,7 @@ public class OncePerDayScheduledTask {
         List<String> eventUrls = meetupApiService.getAllEventUrls();
         List<Event> eventList = meetupApiService.getAllEventsRsvpOpenToday(eventUrls);
 
-        eventList.add(new Event("brunch", "https://www.meetup.com/the-sunday-squad/events/298062683/", new Date())); // todo remove
+//        eventList.add(new Event("brunch", "https://www.meetup.com/the-sunday-squad/events/298062683/", new Date())); // todo remove
         if (eventList.size() > 0) {
             for (Event event : eventList) {
                 log.info("Scheduling event: {} at: {}", event.getEventTitle(), event.getRsvpOpensDate());
