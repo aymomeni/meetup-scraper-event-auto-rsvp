@@ -5,6 +5,7 @@ import com.momeni.meetup.rsvp.helper.VisibilityHelper;
 import com.momeni.meetup.rsvp.model.Event;
 import com.momeni.meetup.rsvp.service.MeetupScraperService;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
@@ -86,12 +87,18 @@ public class TaskDefinitionBean implements Runnable {
                 throw new RuntimeException(exception);
             }
 
-            visibilityHelper.waitForPresenceOf(By.xpath("//button[@data-testid=\"attend-irl-btn\"]"));
+            try {
+                visibilityHelper.waitForPresenceOf(By.xpath("//button[@data-testid=\"attend-irl-btn\"]"));
+            } catch (TimeoutException timeoutException) {
+                log.error(timeoutException.getMessage());
+                hooks.closeDriver();
+                return;
+            }
 
             log.info("Rsvp to event button present");
-
             WebElement attendButton = driver.findElement(By.xpath("//button[@data-testid=\"attend-irl-btn\"]"));
             visibilityHelper.waitForVisibilityOf(attendButton);
+
             attendButton.click();
             hooks.closeDriver();
         }
