@@ -6,6 +6,8 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElem
 import com.momeni.meetup.rsvp.config.Hook;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +16,8 @@ public class VisibilityHelper {
 
     @Autowired
     private Hook hooks;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Hook.class);
 
     /**
      * Waits until the given element is visible.
@@ -32,8 +36,8 @@ public class VisibilityHelper {
      * @param by Selector of the element
      */
     public void waitForPresenceOf(By by) {
-        System.out.println("got to waitForPresenceOf");
+        LOGGER.info("got to waitForPresenceOf");
         hooks.getWait().until(visibilityOfElementLocated(by));
-        System.out.println(by.toString() + "found");
+        LOGGER.info(by.toString() + "found");
     }
 }
