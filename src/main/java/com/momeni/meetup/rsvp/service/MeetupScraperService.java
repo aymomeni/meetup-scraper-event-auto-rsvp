@@ -1,10 +1,8 @@
 package com.momeni.meetup.rsvp.service;
 
-import com.momeni.meetup.rsvp.config.Hook;
-import com.momeni.meetup.rsvp.helper.VisibilityHelper;
+import com.momeni.meetup.rsvp.model.Event;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +12,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,7 +22,8 @@ public class MeetupScraperService {
     @Value("${meetup.url}")
     String meetupBaseUrl;
 
-    private static final Pattern eventRsvpOpenPattern = Pattern.compile("\"rsvpOpenTime\":\"(?<dateTime>\\d+-\\d+-\\d{2}T\\d+:\\d+:\\d+-\\d+:\\d+)\",");
+    private static final Pattern eventRsvpOpenDatePattern = Pattern.compile("\"rsvpOpenTime\":\"(?<dateTime>\\d+-\\d+-\\d{2}T\\d+:\\d+:\\d+-\\d+:\\d+)\",");
+    private static final Pattern eventTitlePattern = Pattern.compile("<title>(?<eventTitle>.*)<\\/title>");
     private static final Pattern eventUrlPattern = Pattern.compile("\"eventUrl\":\"(?<eventUrl>https://www.meetup.com/cottonwood-co-ed-adult-soccer/events/\\d+/)");
 
     public List<String> getAllEventUrls() throws IOException {
@@ -40,26 +38,59 @@ public class MeetupScraperService {
         return eventUrls;
     }
 
-
-    // TODO: should return events and their rsvp time
-    public HashMap<String, Date> getEventUrlRsvpOpenMap(List<String> eventUrls) throws IOException {
-        HashMap<String, Date> eventUrlRsvpOpenDateMap = new HashMap<>();
+    public List<Event> getEventUrlRsvpOpenDateMap(List<String> eventUrls) throws IOException {
+        List<Event> eventList = new ArrayList<>();
 
         for (String eventUrl : eventUrls) {
             Document document = Jsoup.connect(eventUrl).get();
 
-            Matcher eventRsvpOpenMatcher = eventRsvpOpenPattern.matcher(document.toString());
+            Matcher eventTitleMatcher = eventTitlePattern.matcher(document.toString());
+            String eventTitle = "";
+            if (eventTitleMatcher.find()) {
+                eventTitle = eventTitleMatcher.group("eventTitle");
+            }
+
+            Matcher eventRsvpOpenMatcher = eventRsvpOpenDatePattern.matcher(document.toString());
+            String strDate = "";
+            if (eventRsvpOpenMatcher.find()) {
+                strDate = eventRsvpOpenMatcher.group("dateTime");
+            }
+
+            Date eventDate = this.stringToISO8601(strDate);
+            Event event = new Event(eventTitle, eventUrl, eventDate);
+            eventList.add(event);
+        }
+
+        return eventList;
+    }
+
+    public List<Event> getAllEventsRsvpOpenToday(List<String> eventUrls) throws IOException {
+        List<Event> eventList = new ArrayList<>();
+        for (String eventUrl : eventUrls) {
+            Document document = Jsoup.connect(eventUrl).get();
+            Matcher eventRsvpOpenMatcher = eventRsvpOpenDatePattern.matcher(document.toString());
+
+            Matcher eventTitleMatcher = eventTitlePattern.matcher(document.toString());
+            String eventTitle = "";
+            if (eventTitleMatcher.find()) {
+                eventTitle = eventTitleMatcher.group("eventTitle");
+            }
 
             String strDate = "";
             if (eventRsvpOpenMatcher.find()) {
                 strDate = eventRsvpOpenMatcher.group("dateTime");
             }
 
-            Date d = this.stringToISO8601(strDate);
-            eventUrlRsvpOpenDateMap.put(eventUrl, d);
+            Date eventDate = this.stringToISO8601(strDate);
+
+//            if(DateUtils.isSameDay(eventDate, new Date())) {
+            if(new Date().after(eventDate) || new Date().before(eventDate)) {
+                Event event = new Event(eventTitle, eventUrl, eventDate);
+                eventList.add(event);
+            }
         }
 
-        return eventUrlRsvpOpenDateMap;
+        return eventList;
     }
 
     public static Date stringToISO8601(String dateStr) {

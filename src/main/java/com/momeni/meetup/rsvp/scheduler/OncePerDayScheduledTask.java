@@ -21,9 +21,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimerTask;
 
 import com.momeni.meetup.rsvp.config.Hook;
 import com.momeni.meetup.rsvp.helper.VisibilityHelper;
+import com.momeni.meetup.rsvp.model.Event;
 import com.momeni.meetup.rsvp.service.MeetupScraperService;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -36,7 +38,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OncePerDayScheduledTask {
+public class OncePerDayScheduledTask extends TimerTask {
     @Value("${meetup.url}")
     String meetupBaseUrl;
 
@@ -57,14 +59,18 @@ public class OncePerDayScheduledTask {
     // cron = "0 44 15 * * *"
     @Scheduled(cron = "0 * * * * *")
     public void fetchAllEventsWithRsvpOpenForTheDay() throws IOException, InterruptedException {
+
+        // TODO: should check if there is any games to rsvp to today
+        // TODO: if yes create a timerTask to run at that time
+
         log.info("The time is now {}", dateFormat.format(new Date()));
 
         System.out.println("got here");
         List<String> eventUrls = meetupApiService.getAllEventUrls();
-        HashMap<String, Date> eventUrlDateMap = meetupApiService.getEventUrlRsvpOpenMap(eventUrls);
+        List<Event> eventList = meetupApiService.getAllEventsRsvpOpenToday(eventUrls);
 
-        for(String urlKey : eventUrlDateMap.keySet()) {
-            System.out.println(urlKey + " " + eventUrlDateMap.get(urlKey));
+        for(Event event : eventList) {
+            System.out.println("Event: " + event.getEventTitle() + " url: " + event.getEventUrl() + " rsvp opens date: " + event.getRsvpOpensDate());
         }
 
         final WebDriver driver = hooks.getDriver();
@@ -91,5 +97,11 @@ public class OncePerDayScheduledTask {
         visibilityHelper.waitForVisibilityOf(attendButton);
 //        attendButton.click(); TODO: uncomment later
         hooks.closeDriver();
+    }
+
+    @Override
+    public void run() {
+        // rsvp to an event
+
     }
 }
