@@ -59,7 +59,7 @@ public class MeetupScraperService {
 
             Date eventRsvpOpenDate = this.stringToISO8601(strDate);
 
-            if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && !eventTitle.contains("2nd")) { // NOTE: disregard second session, want to get into first session
+            if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && new Date().before(eventRsvpOpenDate) && !eventTitle.contains("2nd")) { // NOTE: disregard second session, want to get into first session
                 Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
                 eventList.add(event);
             }

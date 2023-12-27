@@ -2,6 +2,7 @@ package com.momeni.meetup.rsvp.cron;
 
 import java.util.Date;
 
+
 public class TaskDefinition {
     private String cronExpression;
     private Date dateInstance;

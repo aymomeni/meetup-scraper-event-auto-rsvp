@@ -39,9 +39,8 @@ public class OncePerDayScheduledTask {
     private static final Logger log = LoggerFactory.getLogger(OncePerDayScheduledTask.class);
     private static Timer timer = new Timer();
 
-    // 0 0 7 * * *
-    // cron = "0 44 15 * * *"
-    @Scheduled(cron = "0 */5 * * * *")
+    // 0 0 14 * * * utc (every day at 7am)
+    @Scheduled(cron = "0 */3 * * * *")
     public void dailyEventTaskScheduler() throws IOException {
         log.info("Main Scheduler started.. ");
         List<String> eventUrls = meetupApiService.getAllEventUrls();
@@ -52,6 +51,8 @@ public class OncePerDayScheduledTask {
                 log.info("Scheduling event: {} at: {}", event.getEventTitle(), event.getRsvpOpensDate());
                 taskSchedulingService.scheduleATask(UUID.randomUUID().toString(), taskDefinitionBean, event.getRsvpOpensDate());
             }
+        } else {
+            log.info("No up coming events to schedule an rsvp task for today");
         }
     }
 }
