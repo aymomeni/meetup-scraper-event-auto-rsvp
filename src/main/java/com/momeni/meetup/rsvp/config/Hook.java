@@ -85,6 +85,7 @@ public class Hook {
             chromeOptions.addArguments("--disable-gpu");
             chromeOptions.addArguments("--no-sandbox");
             chromeOptions.addArguments("--window-size=1920,1080");
+            chromeOptions.addArguments("--disable-dev-shm-usage");
         }
 
         driver = new ChromeDriver(chromeOptions);
