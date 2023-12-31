@@ -41,7 +41,7 @@ public class OncePerDayScheduledTask {
     private static Timer timer = new Timer();
 
     // 0 0 14 * * * utc (every day at 7am)
-    @Scheduled(cron = "0 0 14 * * *")
+    @Scheduled(cron = "0 52 16 * * *")
     public void dailyEventTaskScheduler() throws IOException {
         log.info("Main Scheduler started.. ");
         List<String> eventUrls = meetupApiService.getAllEventUrls();
@@ -51,7 +51,7 @@ public class OncePerDayScheduledTask {
         if (eventList.size() > 0) {
             for (Event event : eventList) {
                 log.info("Scheduling event: {} at: {}", event.getEventTitle(), event.getRsvpOpensDate());
-                taskSchedulingService.scheduleATask(UUID.randomUUID().toString(), taskDefinitionBean, addMinutesToDate(1, DateUtil.now()));
+                taskSchedulingService.scheduleATask(UUID.randomUUID().toString(), taskDefinitionBean, event.getRsvpOpensDate());
             }
         } else {
             log.info("No up coming events to schedule an rsvp task for today");
