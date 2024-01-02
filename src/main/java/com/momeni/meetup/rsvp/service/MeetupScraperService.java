@@ -64,7 +64,7 @@ public class MeetupScraperService {
             } else if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && eventTitle.contains("East Millcreek") && !eventTitle.contains("Sat") && !eventTitle.contains("2nd")) { // NOTE: disregard second session, want to get into first session
                 Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
                 eventList.add(event);
-            // else if any event that isn't an indoor game rsvp
+            // else if any event that isn't an indoor game rsvp 
             } else if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && !eventTitle.contains("East Millcreek")) {
                 Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
                 eventList.add(event);
