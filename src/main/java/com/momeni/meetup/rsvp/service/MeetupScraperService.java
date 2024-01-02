@@ -65,8 +65,7 @@ public class MeetupScraperService {
                 Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
                 eventList.add(event);
             // else if any event that isn't an indoor game rsvp
-                // DateUtils.isSameDay(new Date(), eventRsvpOpenDate) &&
-            } else if(eventTitle.contains("Special") && !eventTitle.contains("East Millcreek")) {
+            } else if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && !eventTitle.contains("East Millcreek")) {
                 Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
                 eventList.add(event);
             }

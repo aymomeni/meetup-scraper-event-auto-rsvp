@@ -25,7 +25,7 @@ public class OncePerDayScheduledTask {
     private static final Logger log = LoggerFactory.getLogger(OncePerDayScheduledTask.class);
 
     // 0 0 14 * * * utc -> 7am mst
-    @Scheduled(cron = "0 */2 * * * *")
+    @Scheduled(cron = "0 0 14 * * *")
     public void dailyEventTaskScheduler() throws IOException {
         log.info("Main Scheduler started.. ");
         List<String> eventUrls = meetupApiService.getAllEventUrls();
