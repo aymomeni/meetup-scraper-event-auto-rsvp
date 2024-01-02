@@ -30,7 +30,6 @@ public class MeetupScraperService {
         Document document = Jsoup.connect(meetupBaseUrl + "/cottonwood-co-ed-adult-soccer/events/").get();
         Matcher eventUrlMatcher = eventUrlPattern.matcher(document.toString());
         List<String> eventUrls = new ArrayList<>();
-
         while (eventUrlMatcher.find()) {
             eventUrls.add(eventUrlMatcher.group("eventUrl"));
         }
@@ -66,7 +65,8 @@ public class MeetupScraperService {
                 Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
                 eventList.add(event);
             // else if any event that isn't an indoor game rsvp
-            } else if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && !eventTitle.contains("East Millcreek")) {
+                // DateUtils.isSameDay(new Date(), eventRsvpOpenDate) &&
+            } else if(eventTitle.contains("Special") && !eventTitle.contains("East Millcreek")) {
                 Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
                 eventList.add(event);
             }
