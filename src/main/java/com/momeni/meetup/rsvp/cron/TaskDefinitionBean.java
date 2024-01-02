@@ -1,13 +1,10 @@
 package com.momeni.meetup.rsvp.cron;
 
-import com.momeni.meetup.rsvp.config.Hook;
+import com.momeni.meetup.rsvp.config.DriverConfig;
 import com.momeni.meetup.rsvp.helper.VisibilityHelper;
 import com.momeni.meetup.rsvp.model.Event;
 import com.momeni.meetup.rsvp.service.MeetupScraperService;
-import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
 
 @Service
 public class TaskDefinitionBean implements Runnable {
@@ -32,7 +29,7 @@ public class TaskDefinitionBean implements Runnable {
     String password;
 
     @Autowired
-    private Hook hooks;
+    private DriverConfig hooks;
 
     @Autowired
     private TaskSchedulingService taskSchedulingService;
@@ -44,7 +41,6 @@ public class TaskDefinitionBean implements Runnable {
     private MeetupScraperService meetupApiService;
 
     private static final Logger log = LoggerFactory.getLogger(OncePerDayScheduledTask.class);
-    private static Timer timer = new Timer();
 
     private TaskDefinition taskDefinition;
 
@@ -66,8 +62,6 @@ public class TaskDefinitionBean implements Runnable {
             throw new RuntimeException(e);
         }
 
-//        eventList.add(new Event("brunch", "https://www.meetup.com/the-sunday-squad/events/298062683/", new Date())); // todo remove
-
         for (Event event : eventList) {
             log.info("Event: " + event.getEventTitle() + " url: " + event.getEventUrl() + " rsvp opens date: " + event.getRsvpOpensDate());
 
@@ -83,9 +77,10 @@ public class TaskDefinitionBean implements Runnable {
             passwordInput.sendKeys(password);
             WebElement submitButton = driver.findElement(By.name("submitButton"));
             submitButton.click();
+            log.info("logged in");
 
             try {
-                Thread.sleep(3000);
+                Thread.sleep(5000);
             } catch (InterruptedException exception) {
                 throw new RuntimeException(exception);
             }
@@ -103,6 +98,7 @@ public class TaskDefinitionBean implements Runnable {
             visibilityHelper.waitForVisibilityOf(attendButton);
 
             attendButton.click();
+            log.info("Rsvp button clicked");
             hooks.closeDriver();
         }
     }

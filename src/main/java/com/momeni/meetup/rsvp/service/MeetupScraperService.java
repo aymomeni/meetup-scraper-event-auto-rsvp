@@ -2,7 +2,6 @@ package com.momeni.meetup.rsvp.service;
 
 import com.momeni.meetup.rsvp.model.Event;
 import org.apache.commons.lang3.time.DateUtils;
-import org.assertj.core.util.DateUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,11 +19,10 @@ import java.util.regex.Pattern;
 
 @Service
 public class MeetupScraperService {
-
     @Value("${meetup.url}")
     String meetupBaseUrl;
 
-    private static final Pattern eventRsvpOpenDatePattern = Pattern.compile("\"rsvpOpenTime\":\"(?<dateTime>\\d+-\\d+-\\d{2}T\\d+:\\d+:\\d+-\\d+:\\d+)\",");
+    private static final Pattern eventRsvpOpenDatePattern = Pattern.compile("\"rsvpOpenTime\":\"(?<rsvpOpenDate>\\d+-\\d+-\\d{2}T\\d+:\\d+:\\d+-\\d+:\\d+)\",");
     private static final Pattern eventTitlePattern = Pattern.compile("<title>(?<eventTitle>.*)<\\/title>");
     private static final Pattern eventUrlPattern = Pattern.compile("\"eventUrl\":\"(?<eventUrl>https://www.meetup.com/cottonwood-co-ed-adult-soccer/events/\\d+/)");
 
@@ -44,7 +42,6 @@ public class MeetupScraperService {
         List<Event> eventList = new ArrayList<>();
         for (String eventUrl : eventUrls) {
             Document document = Jsoup.connect(eventUrl).get();
-            Matcher eventRsvpOpenMatcher = eventRsvpOpenDatePattern.matcher(document.toString());
 
             Matcher eventTitleMatcher = eventTitlePattern.matcher(document.toString());
             String eventTitle = "";
@@ -52,14 +49,24 @@ public class MeetupScraperService {
                 eventTitle = eventTitleMatcher.group("eventTitle");
             }
 
-            String strDate = "";
+            Matcher eventRsvpOpenMatcher = eventRsvpOpenDatePattern.matcher(document.toString());
+            String rsvpOpenDateStr = "";
             if (eventRsvpOpenMatcher.find()) {
-                strDate = eventRsvpOpenMatcher.group("dateTime");
+                rsvpOpenDateStr = eventRsvpOpenMatcher.group("rsvpOpenDate");
             }
 
-            Date eventRsvpOpenDate = this.stringToISO8601(strDate);
+            Date eventRsvpOpenDate = this.stringToISO8601(rsvpOpenDateStr);
 
-            if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && new Date().before(eventRsvpOpenDate) && !eventTitle.contains("2nd")) { // NOTE: disregard second session, want to get into first session
+            // if saturday indoor game rsvp to 2nd session (because I want to sleep in)
+            if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && eventTitle.contains("East Millcreek") && eventTitle.contains("Sat") && eventTitle.contains("1st")) {
+                Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
+                eventList.add(event);
+            // else if tuesday indoor game rsvp to 1st session (because I've work the next day)
+            } else if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && eventTitle.contains("East Millcreek") && !eventTitle.contains("Sat") && !eventTitle.contains("2nd")) { // NOTE: disregard second session, want to get into first session
+                Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
+                eventList.add(event);
+            // else if any event that isn't an indoor game rsvp
+            } else if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && !eventTitle.contains("East Millcreek")) {
                 Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
                 eventList.add(event);
             }

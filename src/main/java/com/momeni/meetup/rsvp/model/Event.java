@@ -6,12 +6,23 @@ public class Event {
 
     private String eventUrl;
     private String eventTitle;
+
+    private Date eventDate;
+
     private Date rsvpOpensDate;
 
     public Event(String eventTitle, String eventUrl, Date rsvpOpensDate) {
         this.eventTitle = eventTitle;
         this.eventUrl = eventUrl;
         this.rsvpOpensDate = rsvpOpensDate;
+    }
+
+    public Date getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(Date eventDate) {
+        this.eventDate = eventDate;
     }
 
     public String getEventUrl() {

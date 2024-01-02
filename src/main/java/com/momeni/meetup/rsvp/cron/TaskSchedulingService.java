@@ -1,6 +1,5 @@
 package com.momeni.meetup.rsvp.cron;
 
-import com.momeni.meetup.rsvp.config.Hook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,7 @@ public class TaskSchedulingService {
 
     public void removeScheduledTask(String jobId) {
         ScheduledFuture<?> scheduledTask = jobsMap.get(jobId);
-        if(scheduledTask != null) {
+        if (scheduledTask != null) {
             scheduledTask.cancel(true);
             jobsMap.put(jobId, null);
         }

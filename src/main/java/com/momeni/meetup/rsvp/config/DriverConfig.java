@@ -17,29 +17,25 @@ import static java.lang.Boolean.TRUE;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Component
-public class Hook {
+public class DriverConfig {
 
     @Value("${selenium.browser.headless:false}")
     private Boolean headless;
 
     private WebDriver driver;
 
-    @Value("${meetup.url}")
-    private String baseUrl;
+    private static final Logger LOGGER = LoggerFactory.getLogger(DriverConfig.class);
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Hook.class);
-
-    private WebDriverWait wait;
+    public WebDriverWait wait;
 
     public WebDriver getDriver() {
         if (isEmpty(driver)) {
-            initialiseDriver();
+            initializeDriver();
         }
         return driver;
     }
 
-    private void initialiseDriver() {
-
+    private void initializeDriver() {
         // Prevent mem leak
         if (!isEmpty(driver)) {
             closeDriver();
@@ -51,12 +47,11 @@ public class Hook {
 
         // Navigate
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(10));
-        goToBaseUrl();
     }
 
     public WebDriverWait getWait() {
         if (isEmpty(wait)) {
-            initialiseDriver();
+            initializeDriver();
         }
         return wait;
     }
@@ -86,6 +81,7 @@ public class Hook {
             chromeOptions.addArguments("--no-sandbox");
             chromeOptions.addArguments("--window-size=1920,1080");
             chromeOptions.addArguments("--disable-dev-shm-usage");
+            chromeOptions.addArguments("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36");
         }
 
         driver = new ChromeDriver(chromeOptions);
@@ -102,9 +98,5 @@ public class Hook {
         }
         driver.quit();
         driver = null;
-    }
-
-    private void goToBaseUrl() {
-        driver.navigate().to(baseUrl);
     }
 }
