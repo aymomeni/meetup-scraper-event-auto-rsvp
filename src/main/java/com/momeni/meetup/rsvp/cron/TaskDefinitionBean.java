@@ -80,7 +80,7 @@ public class TaskDefinitionBean implements Runnable {
             log.info("logged in");
 
             try {
-                Thread.sleep(5000);
+                Thread.sleep(3500);
             } catch (InterruptedException exception) {
                 throw new RuntimeException(exception);
             }
@@ -93,13 +93,17 @@ public class TaskDefinitionBean implements Runnable {
                 return;
             }
 
-            log.info("Rsvp to event button present");
-            WebElement attendButton = driver.findElement(By.xpath("//button[@data-testid=\"attend-irl-btn\"]"));
-            visibilityHelper.waitForVisibilityOf(attendButton);
-
-            attendButton.click();
-            log.info("Rsvp button clicked");
-            hooks.closeDriver();
+            try {
+                log.info("Rsvp to event button present");
+                WebElement attendButton = driver.findElement(By.xpath("//button[@data-testid=\"attend-irl-btn\"]"));
+                visibilityHelper.waitForVisibilityOf(attendButton);
+                attendButton.click();
+                log.info("Rsvp button clicked");
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            } finally {
+                hooks.closeDriver();
+            }
         }
     }
 
