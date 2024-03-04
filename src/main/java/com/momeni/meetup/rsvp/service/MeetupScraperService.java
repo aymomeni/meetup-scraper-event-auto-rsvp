@@ -57,7 +57,7 @@ public class MeetupScraperService {
             Date eventRsvpOpenDate = this.stringToISO8601(rsvpOpenDateStr);
 
             // if saturday indoor game rsvp to 2nd session (because I want to sleep in)
-            if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && eventTitle.contains("East Millcreek") && eventTitle.contains("Sat") && eventTitle.contains("2nd")) {
+            if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && eventTitle.contains("East Millcreek") && eventTitle.contains("Sat") && eventTitle.contains("1st")) {
                 Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
                 eventList.add(event);
             // else if tuesday indoor game rsvp to 1st session (because I've work the next day)
