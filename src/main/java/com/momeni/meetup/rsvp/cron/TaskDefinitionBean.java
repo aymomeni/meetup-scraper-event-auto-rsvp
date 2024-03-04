@@ -93,13 +93,19 @@ public class TaskDefinitionBean implements Runnable {
                 return;
             }
 
-            log.info("Rsvp to event button present");
-            WebElement attendButton = driver.findElement(By.xpath("//button[@data-testid=\"attend-irl-btn\"]"));
-            visibilityHelper.waitForVisibilityOf(attendButton);
+            try {
+                log.info("Rsvp to event button present");
+                WebElement attendButton = driver.findElement(By.xpath("//button[@data-testid=\"attend-irl-btn\"]"));
+                visibilityHelper.waitForVisibilityOf(attendButton);
 
-            attendButton.click();
-            log.info("Rsvp button clicked");
-            hooks.closeDriver();
+                attendButton.click();
+                log.info("Rsvp button clicked");
+                hooks.closeDriver();
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                hooks.closeDriver();
+                return;
+            }
         }
     }
 
