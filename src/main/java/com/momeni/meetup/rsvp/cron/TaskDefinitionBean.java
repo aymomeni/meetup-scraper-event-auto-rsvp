@@ -80,7 +80,7 @@ public class TaskDefinitionBean implements Runnable {
             log.info("logged in");
 
             try {
-                Thread.sleep(5000);
+                Thread.sleep(3500);
             } catch (InterruptedException exception) {
                 throw new RuntimeException(exception);
             }
