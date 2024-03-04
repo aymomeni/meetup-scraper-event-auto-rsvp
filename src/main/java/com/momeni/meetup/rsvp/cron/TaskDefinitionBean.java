@@ -93,6 +93,7 @@ public class TaskDefinitionBean implements Runnable {
                 return;
             }
 
+
             try {
                 log.info("Rsvp to event button present");
                 WebElement attendButton = driver.findElement(By.xpath("//button[@data-testid=\"attend-irl-btn\"]"));
@@ -100,11 +101,10 @@ public class TaskDefinitionBean implements Runnable {
 
                 attendButton.click();
                 log.info("Rsvp button clicked");
-                hooks.closeDriver();
             } catch (Exception e) {
                 log.error(e.getMessage());
+            } finally {
                 hooks.closeDriver();
-                return;
             }
         }
     }
