@@ -12,6 +12,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -56,15 +57,19 @@ public class MeetupScraperService {
 
             Date eventRsvpOpenDate = this.stringToISO8601(rsvpOpenDateStr);
 
-            // if saturday indoor game rsvp to 2nd session (because I want to sleep in)
-            if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && eventTitle.contains("East Millcreek") && eventTitle.contains("Sat") && eventTitle.contains("2nd")) {
-                Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
-                eventList.add(event);
-            // else if tuesday indoor game rsvp to 1st session (because I've work the next day)
-            } else if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && eventTitle.contains("East Millcreek") && !eventTitle.contains("Sat") && !eventTitle.contains("2nd")) { // NOTE: disregard second session, want to get into first session
-                Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
-                eventList.add(event);
-            }
+//            // if saturday indoor game rsvp to 2nd session (because I want to sleep in)
+//            if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && eventTitle.contains("East Millcreek") && eventTitle.contains("Sat") && eventTitle.contains("2nd")) {
+//                Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
+//                eventList.add(event);
+//            // else if tuesday indoor game rsvp to 1st session (because I've work the next day)
+//            } else if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && eventTitle.contains("East Millcreek") && !eventTitle.contains("Sat") && !eventTitle.contains("2nd")) { // NOTE: disregard second session, want to get into first session
+//                Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
+//                eventList.add(event);
+//            }
+
+            // all events
+            Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
+            eventList.add(event);
         }
         return eventList;
     }
