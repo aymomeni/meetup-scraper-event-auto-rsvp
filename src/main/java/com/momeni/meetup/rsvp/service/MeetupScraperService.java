@@ -67,9 +67,11 @@ public class MeetupScraperService {
 //                eventList.add(event);
 //            }
 
-            // all events
-            Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
-            eventList.add(event);
+            // all outdoor events except Thursday events
+            if(!eventTitle.contains("Thu")) {
+                Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
+                eventList.add(event);
+            }
         }
         return eventList;
     }
