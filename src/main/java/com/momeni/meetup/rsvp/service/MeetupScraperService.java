@@ -68,7 +68,7 @@ public class MeetupScraperService {
 //            }
 
             // all outdoor events except Thursday events
-            if(!eventTitle.contains("Thu")) {
+            if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && !eventTitle.contains("Thu")) {
                 Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
                 eventList.add(event);
             }
