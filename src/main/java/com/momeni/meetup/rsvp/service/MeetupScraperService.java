@@ -57,15 +57,20 @@ public class MeetupScraperService {
             Date eventRsvpOpenDate = this.stringToISO8601(rsvpOpenDateStr);
 
             // if saturday indoor game rsvp to 2nd session (because I want to sleep in)
-            if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && eventTitle.contains("East Millcreek") && eventTitle.contains("Sat") && eventTitle.contains("2nd")) {
-                Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
-                eventList.add(event);
-            // else if tuesday indoor game rsvp to 1st session (because I've work the next day)
-            } else if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && eventTitle.contains("East Millcreek") && !eventTitle.contains("Sat") && !eventTitle.contains("2nd")) { // NOTE: disregard second session, want to get into first session
-                Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
-                eventList.add(event);
-            // else if any event that isn't an indoor game rsvp 
-            } else if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && !eventTitle.contains("East Millcreek")) {
+//            if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && eventTitle.contains("East Millcreek") && eventTitle.contains("Sat") && eventTitle.contains("2nd")) {
+//                Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
+//                eventList.add(event);
+//            // else if tuesday indoor game rsvp to 1st session (because I've work the next day)
+//            } else if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && eventTitle.contains("East Millcreek") && !eventTitle.contains("Sat") && !eventTitle.contains("2nd")) { // NOTE: disregard second session, want to get into first session
+//                Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
+//                eventList.add(event);
+//            // else if any event that isn't an indoor game rsvp
+//            } else if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && !eventTitle.contains("East Millcreek")) {
+//                Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
+//                eventList.add(event);
+//            }
+
+            if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && !eventTitle.contains("Thu")) {
                 Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
                 eventList.add(event);
             }
