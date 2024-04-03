@@ -54,9 +54,11 @@ public class MeetupScraperService {
                 rsvpOpenDateStr = eventRsvpOpenMatcher.group("rsvpOpenDate");
             }
 
-            Date eventRsvpOpenDate = this.stringToISO8601(rsvpOpenDateStr);
 
-            // if saturday indoor game rsvp to 2nd session (because I want to sleep in)
+            if(!rsvpOpenDateStr.isBlank() && !rsvpOpenDateStr.isEmpty()) {
+                Date eventRsvpOpenDate = this.stringToISO8601(rsvpOpenDateStr);
+
+// if during winter -- saturday indoor game rsvp to 2nd session (because I want to sleep in)
 //            if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && eventTitle.contains("East Millcreek") && eventTitle.contains("Sat") && eventTitle.contains("2nd")) {
 //                Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
 //                eventList.add(event);
@@ -70,9 +72,10 @@ public class MeetupScraperService {
 //                eventList.add(event);
 //            }
 
-            if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && !eventTitle.contains("Thu")) {
-                Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
-                eventList.add(event);
+                if(DateUtils.isSameDay(new Date(), eventRsvpOpenDate) && !eventTitle.contains("Thu")) {
+                    Event event = new Event(eventTitle, eventUrl, eventRsvpOpenDate);
+                    eventList.add(event);
+                }
             }
         }
         return eventList;
@@ -81,6 +84,7 @@ public class MeetupScraperService {
     public static Date stringToISO8601(String dateStr) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
         try {
+            System.out.println("stringToISO8601 " + dateStr);
             return df.parse(dateStr);
         } catch (ParseException e) {
             e.printStackTrace();
